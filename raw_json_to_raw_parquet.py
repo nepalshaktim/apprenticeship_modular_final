@@ -34,14 +34,15 @@ df = spark.read.option("multiline", "true").json(json_path_encounter)
 # Check schema
 #df.printSchema()
 
-#Extract encounter_start_month from actual_encounter_start column for each patient for meaningful partition
-df = df.withColumn("encounter_start_month", month(to_date(col("actualPeriod.start")))) \
-    .withColumn("patient_id", col("subject.reference"))
+#Extract encounter_start_year and encounter_start_month from actual_encounter_start column for each patient for meaningful partition
+df = df.withColumn("encounter_start_year", year(to_date(col("actualPeriod.start")))) \
+    .withColumn("encounter_start_month", month(to_date(col("actualPeriod.start"))))
 
-# Write Parquet partitioned by encounter_start_month and patient_id
-df.repartition("encounter_start_month", "patient_id") \
+
+# Write Parquet partitioned by encounter_start_year and encounter_start_month
+df.repartition("encounter_start_year", "encounter_start_month") \
     .write.mode("overwrite") \
-    .partitionBy("encounter_start_month","patient_id") \
+    .partitionBy("encounter_start_year","encounter_start_month") \
     .parquet(parquet_folder_encounter)
 
 print("✅✅✅✅ Encounter data Json to Parquet conversion complete.")
@@ -57,7 +58,9 @@ df = spark.read.option("multiline", "true").json(json_path_condition)
 # Check schema
 #df.printSchema()
 
-#Extract encounter_start_month from actual_encounter_start column for each patient for meaningful partition
+#Extract condition recorded_date_year and recorded_date_month from recordedDate column and \
+# clinical status for each condition for meaningful partition
+
 df = df.withColumn("recorded_date_year", year(to_date(col("recordedDate")))) \
     .withColumn("recorded_date_month", month(to_date(col("recordedDate")))) \
     .withColumn("clinical_status", col("clinicalStatus.coding")[0]["display"])
