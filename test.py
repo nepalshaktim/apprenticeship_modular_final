@@ -38,4 +38,4 @@ flat_df = df.select(
 # Write as CSV
 flat_df.coalesce(1).write.mode("overwrite").option("header", "true").csv(csv_output_folder)
 
-print("✅ Parquet to CSV conversion complete.")
+print("✅ Parquet to CSV conversion is complete.")
