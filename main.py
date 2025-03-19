@@ -21,7 +21,7 @@ encounters = []
 conditions = []
 
 # Generate multiple patients
-for _ in range(50):
+for _ in range(5000):
     birthday, today, deceased_date_time, patient_id, patient_data = generate_patient_data() # Generate a unique patient
     patients.append(patient_data)
 
